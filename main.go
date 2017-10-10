@@ -27,7 +27,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "%s", d)
 
 	case "D":
-		fmt.Fprintf(w, "%s", s)
+		d, err := Data(body)
+		if err != nil {
+			log.Fatal("Heartbeat Error:", err.Error())
+			fmt.Fprintf(w, "%s", err.Error())
+		}
+		fmt.Fprintf(w, "%s", d)
 	case "C":
 		fmt.Fprintf(w, "%s", s)
 	case "U":

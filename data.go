@@ -1,12 +1,28 @@
 package main
 
-import "encoding/binary"
-import "log"
+import (
+	"encoding/binary"
+	"fmt"
+	"log"
+	"strconv"
+)
 
 var (
 	dataStart = 18
 	recordLen = 132
 )
+
+func asciiToInt(value []byte) (field int, err error) {
+	return strconv.Atoi(string(value))
+}
+
+func asciiToString(value []byte) (field string) {
+	return string(value)
+}
+
+func asciiToHex(value []byte) (field string) {
+	return fmt.Sprintf("%x", value)
+}
 
 // Data Process heartbeat type message from mobile device
 func Data(message []byte) (r []byte, err error) {
@@ -32,39 +48,73 @@ func Data(message []byte) (r []byte, err error) {
 func row(message []byte) (r []byte, err error) {
 
 	// Required
-	SignalRecord := string(message[:4])
-	log.Printf("imei: %s", SignalRecord)
-	SignalDateTimeRead := string(message[4:16])
-	log.Printf("imei: %s", SignalDateTimeRead)
-	SignalEvent := string(message[16:17])
-	log.Printf("imei: %s", SignalEvent)
-	SignalTagID := string(message[17:25])
-	log.Printf("imei: %s", SignalTagID)
+	SignalRecord, err := asciiToInt(message[:4])
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("SignalRecord: %v", SignalRecord)
+
+	SignalDateTimeRead := asciiToString(message[4:16])
+	log.Printf("SignalDateTimeRead: %s", SignalDateTimeRead)
+
+	SignalEvent, err := asciiToInt(message[16:17])
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("SignalEvent: %v", SignalEvent)
+
+	SignalTagID := asciiToHex(message[17:25])
+	log.Printf("SignalTagID: %s", SignalTagID)
+
 	// Non required
-	// SignalUTCTime := string(message[25:31])
-	// SignalPosStat := string(message[31:32])
-	// SignalLatitude := string(message[32:39])
-	// SignalLatitudeRef := string(message[39:40])
-	// SignalLongtitude := string(message[40:48])
-	// SignalLongtitudeRef := string(message[48:49])
-	// SignalSpeed := string(message[49:54])
-	// SignalHeading := string(message[54:59])
-	// SignalUTCDate := string(message[59:65])
-	// SignalMagneticVariation := string(message[65:70])
-	// SignalMagRef := string(message[70:71])
-	// SignalFixMode := string(message[71:72])
-	// SignalSateliteUsed := string(message[72:73])
-	// SignalHDOP := string(message[73:78])
-	// SignalMslAltitude := string(message[78:83])
-	// SignalBattery := string(message[83:87])
-	// SignalTemperature := string(message[87:90])
-	// SignalLight := string(message[90:92])
-	// RSSI := string(message[92:94])
-	// LAC := string(message[94:98])
-	// Ci := string(message[98:102])
-	// MCC := string(message[102:105])
-	// MNC := string(message[105:107])
-	// MSIN := string(message[107:117])
+	SignalUTCTime := string(message[25:31])
+	log.Printf("SignalUTCTime: %s", SignalUTCTime)
+	SignalPosStat := string(message[31:32])
+	log.Printf("SignalPosStat: %s", SignalPosStat)
+	SignalLatitude := string(message[32:39])
+	log.Printf("SignalLatitude: %s", SignalLatitude)
+	SignalLatitudeRef := string(message[39:40])
+	log.Printf("SignalLatitudeRef: %s", SignalLatitudeRef)
+	SignalLongtitude := string(message[40:48])
+	log.Printf("SignalLongtitude: %s", SignalLongtitude)
+	SignalLongtitudeRef := string(message[48:49])
+	log.Printf("SignalLongtitudeRef: %s", SignalLongtitudeRef)
+	SignalSpeed := string(message[49:54])
+	log.Printf("SignalSpeed: %s", SignalSpeed)
+	SignalHeading := string(message[54:59])
+	log.Printf("SignalHeading: %s", SignalHeading)
+	SignalUTCDate := string(message[59:65])
+	log.Printf("SignalUTCDate: %s", SignalUTCDate)
+	SignalMagneticVariation := string(message[65:70])
+	log.Printf("SignalMagneticVariation: %s", SignalMagneticVariation)
+	SignalMagRef := string(message[70:71])
+	log.Printf("SignalMagRef: %s", SignalMagRef)
+	SignalFixMode := string(message[71:72])
+	log.Printf("SignalFixMode: %s", SignalFixMode)
+	SignalSateliteUsed := fmt.Sprintf("%x", message[72:73])
+	log.Printf("SignalSateliteUsed: %s", SignalSateliteUsed)
+	SignalHDOP := string(message[73:78])
+	log.Printf("SignalHDOP: %s", SignalHDOP)
+	SignalMslAltitude := string(message[78:83])
+	log.Printf("SignalMslAltitude: %s", SignalMslAltitude)
+	SignalBattery := string(message[83:87])
+	log.Printf("SignalBattery: %s", SignalBattery)
+	SignalTemperature := string(message[87:90])
+	log.Printf("SignalTemperature: %s", SignalTemperature)
+	SignalLight := fmt.Sprintf("%x", message[90:92])
+	log.Printf("SignalLight: %s", SignalLight)
+	RSSI := string(message[92:94])
+	log.Printf("RSSI: %s", RSSI)
+	LAC := string(message[94:98])
+	log.Printf("LAC: %s", LAC)
+	Ci := string(message[98:102])
+	log.Printf("Ci: %s", Ci)
+	MCC := string(message[102:105])
+	log.Printf("MCC: %s", MCC)
+	MNC := string(message[105:107])
+	log.Printf("MNC: %s", MNC)
+	MSIN := string(message[107:117])
+	log.Printf("MSIN: %s", MSIN)
 
 	return r, nil
 }
