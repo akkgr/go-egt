@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"log"
-	"strconv"
 )
 
 var (
@@ -12,26 +11,11 @@ var (
 	recordLen = 132
 )
 
-func asciiToInt(value []byte) (field int, err error) {
-	return strconv.Atoi(string(value))
-}
-
-func asciiToString(value []byte) (field string) {
-	return string(value)
-}
-
-func asciiToHex(value []byte) (field string) {
-	return fmt.Sprintf("%x", value)
-}
-
 // Data Process heartbeat type message from mobile device
 func Data(message []byte) (r []byte, err error) {
 
-	imei := string(message[1:15])
+	imei := string(message[1:16])
 	log.Printf("imei: %s", imei)
-
-	sim := string(message[16:20])
-	log.Printf("sim: %s", sim)
 
 	dataLen := binary.BigEndian.Uint16(message[16:18])
 	records := int(dataLen) / recordLen
@@ -48,22 +32,20 @@ func Data(message []byte) (r []byte, err error) {
 func row(message []byte) (r []byte, err error) {
 
 	// Required
-	SignalRecord, err := asciiToInt(message[:4])
-	if err != nil {
-		return nil, err
-	}
+	log.Printf("SignalRecord: %x", message[:4])
+	SignalRecord := binary.LittleEndian.Uint32(message[:4])
 	log.Printf("SignalRecord: %v", SignalRecord)
 
-	SignalDateTimeRead := asciiToString(message[4:16])
+	log.Printf("SignalDateTimeRead: %x", message[4:16])
+	SignalDateTimeRead := string(message[4:16])
 	log.Printf("SignalDateTimeRead: %s", SignalDateTimeRead)
 
-	SignalEvent, err := asciiToInt(message[16:17])
-	if err != nil {
-		return nil, err
-	}
+	log.Printf("SignalEvent: %x", message[16:17])
+	SignalEvent := fmt.Sprintf("%x", message[16:17])
 	log.Printf("SignalEvent: %v", SignalEvent)
 
-	SignalTagID := asciiToHex(message[17:25])
+	log.Printf("SignalTagID: %x", message[17:25])
+	SignalTagID := fmt.Sprintf("%x", message[17:25])
 	log.Printf("SignalTagID: %s", SignalTagID)
 
 	// Non required
