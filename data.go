@@ -29,7 +29,7 @@ func Data(message []byte) (r []byte, err error) {
 	return r, nil
 }
 
-func row(message []byte) (r []byte, err error) {
+func row(message []byte) (rec interface{}, err error) {
 
 	// Required
 	log.Printf("SignalRecord: %x", message[:4])
